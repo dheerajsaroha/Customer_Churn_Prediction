@@ -1,0 +1,56 @@
+{
+  "test_accuracy": 0.7743080198722498,
+  "test_precision": 0.5669856459330144,
+  "test_recall": 0.6336898395721925,
+  "test_f1": 0.5984848484848485,
+  "test_roc_auc": 0.8272972693688807,
+  "confusion_matrix": [
+    [
+      854,
+      181
+    ],
+    [
+      137,
+      237
+    ]
+  ],
+  "classification_report": "              precision    recall  f1-score   support\n\n           0       0.86      0.83      0.84      1035\n           1       0.57      0.63      0.60       374\n\n    accuracy                           0.77      1409\n   macro avg       0.71      0.73      0.72      1409\nweighted avg       0.78      0.77      0.78      1409\n",
+  "overfitting_check": {
+    "train_accuracy": 0.9770475960376903,
+    "test_accuracy": 0.7743080198722498,
+    "train_f1": 0.9772400574988022,
+    "test_f1": 0.5984848484848485,
+    "gap": 0.20273957616544047
+  },
+  "best_model_name": "Random Forest",
+  "best_params": {
+    "n_estimators": 500,
+    "min_samples_split": 5,
+    "min_samples_leaf": 1,
+    "max_features": 0.3,
+    "max_depth": 20,
+    "bootstrap": true
+  },
+  "sampling_strategy": "SMOTE Oversampling",
+  "feature_names": [
+    "gender",
+    "SeniorCitizen",
+    "Partner",
+    "Dependents",
+    "tenure",
+    "PhoneService",
+    "MultipleLines",
+    "InternetService",
+    "OnlineSecurity",
+    "OnlineBackup",
+    "DeviceProtection",
+    "TechSupport",
+    "StreamingTV",
+    "StreamingMovies",
+    "Contract",
+    "PaperlessBilling",
+    "PaymentMethod",
+    "MonthlyCharges",
+    "TotalCharges"
+  ]
+}

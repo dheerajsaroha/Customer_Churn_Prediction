@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Result - Customer Churn{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header {% if prediction == 'Churn' %}bg-danger{% else %}bg-success{% endif %} text-white">
+                <h3 class="mb-0"><i class="fas fa-info-circle me-2"></i>Prediction Result</h3>
+            </div>
+            <div class="card-body text-center py-5">
+                <h1 class="display-2 fw-bold {% if prediction == 'Churn' %}text-danger{% else %}text-success{% endif %}">
+                    {{ prediction }}
+                </h1>
+                <p class="lead mt-3">
+                    Confidence: <strong>{{ probability }}%</strong>
+                </p>
+                {% if prediction == 'Churn' %}
+                <p class="text-danger mt-3">
+                    <i class="fas fa-exclamation-triangle fa-lg me-2"></i>
+                    This customer is at risk of churning.
+                </p>
+                {% else %}
+                <p class="text-success mt-3">
+                    <i class="fas fa-check-circle fa-lg me-2"></i>
+                    This customer is likely to stay.
+                </p>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-light">
+                <h5 class="mb-0">Customer Information:</h5>
+                <div class="row mt-2">
+                    {% for key, value in input_data.items() %}
+                    <div class="col-md-6 mb-1">
+                        <span class="text-muted">{{ key.replace('_', ' ').title() }}:</span>
+                        <strong>{{ value }}</strong>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('main.predict_page') }}" class="btn btn-outline-primary">
+                <i class="fas fa-redo me-2"></i>Predict Another
+            </a>
+            <a href="{{ url_for('main.evaluation') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-chart-bar me-2"></i>View Model Evaluation
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

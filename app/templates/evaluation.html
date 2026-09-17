@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Evaluation - Customer Churn{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="display-5 fw-bold mb-4"><i class="fas fa-chart-bar me-2"></i>Model Evaluation</h1>
+    </div>
+</div>
+
+{% if results %}
+<div class="row">
+    <div classcol-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Model Metrics</h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="stat-card bg-light p-3 rounded text-center">
+                            <h2 class="fw-bold text-primary">{{ "%.2f"|format(results.test_accuracy * 100) }}%</h2>
+                            <p class="text-muted mb-0">Accuracy</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-light p-3 rounded text-center">
+                            <h2 class="fw-bold text-primary">{{ "%.2f"|format(results.test_precision * 100) }}%</h2>
+                            <p class="text-muted mb-0">Precision</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-light p-3 rounded text-center">
+                            <h2 class="fw-bold text-primary">{{ "%.2f"|format(results.test_recall * 100) }}%</h2>
+                            <p class="text-muted mb-0">Recall</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-light p-3 rounded text-center">
+                            <h2 class="fw-bold text-primary">{{ "%.2f"|format(results.test_f1 * 100) }}%</h2>
+                            <p class="text-muted mb-0">F1 Score</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h5>Model Details</h5>
+                    <p><strong>Best Model:</strong> {{ results.best_model_name }}</p>
+                    <p><strong>Sampling Strategy:</strong> {{ results.sampling_strategy }}</p>
+                    {% if results.test_roc_auc %}
+                    <p><strong>ROC AUC:</strong> {{ "%.4f"|format(results.test_roc_auc) }}</p>
+                    {% endif %}
+                </div>
+                {% if results.overfitting_check %}
+                <h5 class="mt-4">Overfitting Analysis</h5>
+                <div class="alert {% if results.overfitting_check.gap > 0.05 %}alert-warning{% else %}alert-success{% endif %}">
+                    <i class="fas fa-{% if results.overfitting_check.gap > 0.05 %}exclamation-triangle{% else %}check-circle{% endif %} me-2"></i>
+                    Train-Test Gap: {{ "%.4f"|format(results.overfitting_check.gap) }}
+                    {% if results.overfitting_check.gap > 0.05 %}
+                    (Potential overfitting detected)
+                    {% else %}
+                    (No significant overfitting)
+                    {% endif %}
+                </div>
+                {% endif %}
+                <h5 class="mt-4">Confusion Matrix</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered mx-auto" style="max-width: 300px;">
+                        <thead class="table-dark">
+                            <tr>
+                                <th></th>
+                                <th>Predicted No Churn</th>
+                                <th>Predicted Churn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set cm = results.confusion_matrix %}
+                            <tr>
+                                <th>Actual No Churn</th>
+                                <td>{{ cm[0][0] }}</td>
+                                <td>{{ cm[0][1] }}</td>
+                            </tr>
+                            <tr>
+                                <th>Actual Churn</th>
+                                <td>{{ cm[1][0] }}</td>
+                                <td>{{ cm[1][1] }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Class Distribution</h5>
+            </div>
+            <div class="card-body">
+                {% if class_distribution %}
+                {% for cls, count in class_distribution.items() %}
+                <p class="mb-2"><strong>{{ 'Churn' if cls == '1' else 'No Churn' }}:</strong> {{ count }}</p>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        {% if has_chart %}
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Feature Importance</h5>
+            </div>
+            <div class="card-body text-center">
+                <img src="{{ url_for('main.feature_importance_image') }}"
+                     alt="Feature Importance" class="img-fluid rounded">
+                <p class="text-muted small mt-2">Feature importance chart from model training.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="alert alert-warning">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    No evaluation results found. Please train the model first.
+</div>
+{% endif %}
+
+<div class="text-center mt-4">
+    <a href="{{ url_for('main.predict_page') }}" class="btn btn-primary">
+        <i class="fas fa-magic me-2"></i>Make a Prediction
+    </a>
+</div>
+{% endblock %}
