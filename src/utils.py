@@ -5,10 +5,7 @@ import warnings
 import pandas as pd
 import numpy as np
 
-from src.data_preprocessing import load_raw_data, preprocess_data
-
-
-MODEL_DIR = "models"
+from src.data_preprocessing import load_raw_data, preprocess_data, MODEL_DIR
 
 
 def ensure_model_dir():

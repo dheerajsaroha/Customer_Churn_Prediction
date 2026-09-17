@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 import pickle
@@ -6,8 +7,10 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import RandomUnderSampler
 
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DATA_PATH = "Dataset/WA_Fn-UseC_-Telco-Customer-Churn.csv"
+DATA_PATH = os.path.join(PROJECT_ROOT, "Dataset", "WA_Fn-UseC_-Telco-Customer-Churn.csv")
+MODEL_DIR = os.path.join(PROJECT_ROOT, "models")
 RANDOM_STATE = 42
 
 NUMERICAL_FEATURES = ["tenure", "MonthlyCharges", "TotalCharges"]

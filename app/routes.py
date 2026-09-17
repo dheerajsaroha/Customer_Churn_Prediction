@@ -2,14 +2,11 @@ import os
 import json
 from flask import Blueprint, render_template, request, jsonify
 from src.data_preprocessing import (
-    preprocess_data, get_class_distribution,
+    preprocess_data, get_class_distribution, MODEL_DIR,
 )
 from src.utils import load_model, load_artifacts, get_feature_names, predict_single
 
 main_bp = Blueprint("main", __name__)
-
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "Dataset")
-MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models")
 
 FEATURE_OPTIONS = {
     "gender": ["Female", "Male"],
