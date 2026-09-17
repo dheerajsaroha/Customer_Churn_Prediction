@@ -4,6 +4,7 @@ import json
 import warnings
 import pandas as pd
 import numpy as np
+import joblib
 
 from src.data_preprocessing import load_raw_data, preprocess_data, MODEL_DIR
 
@@ -13,18 +14,18 @@ def ensure_model_dir():
         os.makedirs(MODEL_DIR, exist_ok=True)
 
 
-def save_model(model, filepath):
+def save_model(model, filepath, compress=True):
     ensure_model_dir()
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    with open(filepath, "wb") as f:
-        pickle.dump(model, f)
+    if compress:
+        joblib.dump(model, filepath, compress=3)
+    else:
+        joblib.dump(model, filepath)
     return filepath
 
 
 def load_model(filepath):
-    with open(filepath, "rb") as f:
-        model = pickle.load(f)
-    return model
+    return joblib.load(filepath)
 
 
 def save_artifacts(artifacts_dict, base_dir=None):
@@ -38,9 +39,8 @@ def save_artifacts(artifacts_dict, base_dir=None):
     results_path = os.path.join(base_dir, "evaluation_results.json")
 
     if "model" in artifacts_dict:
-        model_path = os.path.join(base_dir, "customer_churn_model.pkl")
-        with open(model_path, "wb") as f:
-            pickle.dump(artifacts_dict["model"], f)
+        model_path = os.path.join(base_dir, "customer_churn_model.joblib")
+        joblib.dump(artifacts_dict["model"], model_path, compress=3)
 
     if "encoders" in artifacts_dict:
         with open(encoders_path, "wb") as f:
@@ -81,17 +81,21 @@ def load_artifacts(base_dir=None):
 
     artifacts = {}
 
-    model_path = os.path.join(base_dir, "customer_churn_model.pkl")
+    model_path = os.path.join(base_dir, "customer_churn_model.joblib")
+    if not os.path.exists(model_path):
+        model_path = os.path.join(base_dir, "customer_churn_model.pkl")
     if os.path.exists(model_path):
         artifacts["model"] = load_model(model_path)
 
     encoders_path = os.path.join(base_dir, "encoders.pkl")
     if os.path.exists(encoders_path):
-        artifacts["encoders"] = load_model(encoders_path)
+        with open(encoders_path, "rb") as f:
+            artifacts["encoders"] = pickle.load(f)
 
     scaler_path = os.path.join(base_dir, "scaler.pkl")
     if os.path.exists(scaler_path):
-        artifacts["scaler"] = load_model(scaler_path)
+        with open(scaler_path, "rb") as f:
+            artifacts["scaler"] = pickle.load(f)
 
     results_path = os.path.join(base_dir, "evaluation_results.json")
     if os.path.exists(results_path):
@@ -127,6 +131,7 @@ def predict_single(input_dict, model, encoders, scaler, feature_names):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=UserWarning)
         prediction = model.predict(input_scaled)[0]
+
     probability = None
     if hasattr(model, "predict_proba"):
         with warnings.catch_warnings():
